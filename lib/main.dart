@@ -11,29 +11,22 @@ void main() async {
   runApp(StartingApp());
 }
 
-class StartingApp extends StatefulWidget {
-  @override
-  _StartingAppState createState() => _StartingAppState();
-}
+class StartingApp extends StatelessWidget {
+  const StartingApp({Key key}) : super(key: key);
 
-class _StartingAppState extends State<StartingApp> {
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      future: getUserPosition(),
-      builder: (context, snapshot) {
-        return Builder(
-          builder: (context) {
-            return MaterialApp(
-              home: snapshot.data == null
-                  ? Welcome()
-                  : snapshot.data
-                      ? WelcomeLocationGet()
-                      : MyApp(),
-            );
-          },
-        );
-      },
+    return MaterialApp(
+      home: FutureBuilder(
+        future: getUserPosition(),
+        builder: (context, snapshot) {
+          return snapshot.data == null
+              ? Welcome()
+              : snapshot.data
+                  ? WelcomeLocationGet()
+                  : MyApp();
+        },
+      ),
     );
   }
 }
@@ -44,23 +37,20 @@ Future<bool> getUserPosition() async {
   if (permission == LocationPermission.deniedForever) {
     return null;
   } else if (permission == LocationPermission.denied) {
-    // Запрашиваю разрешение на работу с гео
+    // Request Geo Permisions
     permission = await Geolocator.requestPermission();
   }
   if (permission == LocationPermission.whileInUse ||
       permission == LocationPermission.always) {
+    // Check if service enable
     bool isLocationServiceEnabled;
     isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!isLocationServiceEnabled) {
       await Geolocator.getCurrentPosition();
       isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
     }
-
+    // Recheck service
     if (isLocationServiceEnabled) {
-      Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.best,
-        timeLimit: Duration(seconds: 3),
-      );
       return true;
     } else {
       return false;
