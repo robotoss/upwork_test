@@ -10,7 +10,7 @@ class WelcomeLocationGet extends StatelessWidget {
         title: Text('Welcome Location Get'),
       ),
       body: Center(
-        child: Text('Welcome  Location Get'),
+        child: Text('Welcome Location Get'),
       ),
     );
   }
